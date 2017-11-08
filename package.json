@@ -1,10 +1,10 @@
 {
-  "name": "greeter-bot",
+  "name": "Bibot",
   "version": "1.0.0",
-  "description": "Greeter bot for Renesansz-Playground",
+  "description": "Just for spamming "Morbleu!"",
   "main": "bot.js",
   "repository": "git@github.com:renesansz/discord-greeter-bot.git",
-  "author": "Renemari Padillo",
+  "author": "Summit Sarkar",
   "license": "MIT",
   "dependencies": {
     "discord.io": "^2.5.1",
