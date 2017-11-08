@@ -36,8 +36,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
         switch(cmd) {
             // !ping
-            case 'YT':
-                bot.sendMessage({ to: channelID, message: 'https://bit.ly/silverpro999' });
+            case 'Bibot':
+                bot.sendMessage({ to: channelID, message: 'Morbleu!' });
             break;
             default:
                 bot.sendMessage({ to: channelID, message: 'Unknown command.' });
