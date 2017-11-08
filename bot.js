@@ -1,18 +1,9 @@
 var Discord = require('discord.io');
 
-var logger = require('winston');
-var auth = require('./auth.json');
-
-
-// Configure logger settings
-logger.remove(logger.transports.Console);
-logger.add(logger.transports.Console, {
-    colorize: true
+var bot = new Discord.Client({
+    token: "S6bG06NgEMEd7DHHIGf4_K6Aym7LCcir",
+    autorun: true
 });
-logger.level = 'debug';
-
-
-// Initialize Discord Bot
 var bot = new Discord.Client({
     token: auth.token,
     autorun: true
