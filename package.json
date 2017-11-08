@@ -1,9 +1,9 @@
 {
   "name": "Bibot",
   "version": "1.0.0",
-  "description": "Just for spamming "Morbleu"",
+  "description": "Just for spamming Morbleu!",
   "main": "bot.js",
-  "repository": "git@github.com:renesansz/discord-greeter-bot.git",
+  "repository": "https://github.com/ssharker21/Bibot/",
   "author": "Summit Sarkar",
   "license": "MIT",
   "dependencies": {
