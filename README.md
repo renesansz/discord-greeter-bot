@@ -1,7 +1,7 @@
-![discord](https://discordapp.com/assets/dd4dbc0016779df1378e7812eabaa04d.png)
+![discord](http://movie-dude.co.uk/Cyril Shaps 'The Scarlet Pimpernel' (1956) 1.2.jpg)
 
-# discord-greeter-bot
-My greeter bot for Discord
+# Bibot
+Morbleu!
 
 # Prerequisites
 
