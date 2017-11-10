@@ -1,0 +1,158 @@
+
+
+// Semantic color scheme  
+@import url('https://fonts.googleapis.com/css?family=Open Sans'); 
+@import url('https://fonts.googleapis.com/css?family=Roboto'); 
+$theme-colors: (
+  primary: #00b0eb,
+  secondary: rgb(0,103,150),
+  success: #28a745,
+  info: #17a2b8,
+  warning: #ffc107,
+  danger: #dc3545,
+  light: #f8f9fa,
+  dark: #484d53
+);
+
+// Options
+//
+// Quickly modify global styling by enabling or disabling optional features.
+ 
+$enable-rounded:            true !default;
+$enable-shadows:            false;
+$enable-gradients:          false;
+$enable-transitions:        true !default;
+$enable-hover-media-query:  false !default;
+$enable-grid-classes:       true !default;
+$enable-print-styles:       true !default;
+
+// Variables
+//
+// Theme settings.
+
+$body-bg: white;
+$body-color: #292b2c;
+$body-color-inverse: invert($body-color) !default;
+$link-color: #00b0eb;
+
+$font-family-base: Open Sans;
+
+
+$headings-font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
+
+$font-size-base: 0.8rem;
+ // Assumes the browser default, typically `16px`
+$font-size-h1: 2.5 * $font-size-base;
+$font-size-h2: 2 * $font-size-base;
+$font-size-h3: 1.75 * $font-size-base;
+$font-size-h4: 1.5 * $font-size-base;
+$font-size-h5: 1.25 * $font-size-base;
+$font-size-h6: $font-size-base;
+
+$display1-size: 6 * $font-size-base;
+$display2-size: 5.5 * $font-size-base;
+$display3-size: 4.5 * $font-size-base;
+$display4-size: 3.5 * $font-size-base;
+
+$border-radius: .25rem;
+
+
+
+$spacer: 1.5rem;
+@import 'bootstrap-4.0.0-beta.1';
+
+
+body > * {
+  background-size: cover;
+}
+
+.opaque-overlay {
+  overflow: hidden;
+  position: relative; 
+  > *:first-child:before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: absolute;
+    left: 0px;
+    top: 0px; 
+    pointer-events:none;
+    background: rgba(map-get($theme-colors, 'dark'), 0.25);
+  }
+}
+
+
+.gradient-overlay {
+  overflow: hidden;
+  position: relative; 
+  > *:first-child:before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: absolute;
+    left: 0px;
+    top: 0px; 
+    pointer-events:none;
+    background: linear-gradient(to top, map-get($theme-colors, 'dark') 0%, transparent 100%);
+  }
+}
+
+body {
+  overflow-x:hidden;
+}
+
+.bg-secondary {
+  a {
+    color:white;
+  }
+}
+.half-light {
+	background-image: linear-gradient(to bottom, white 50%, map-get($theme-colors, 'light') 51%,map-get($theme-colors, 'light') 100%); /* Standard syntax */
+}
+
+footer {
+  font-size:110%;
+}
+
+.library-section {
+  background-image: url('site-assets/Library_cover_2.jpg');
+  background-position:50%;
+}
+
+@include media-breakpoint-down(md) {
+  
+  .library-section {
+    
+    
+  overflow: hidden;
+  position: relative; 
+  > *:first-child:before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: absolute;
+    left: 0px;
+    top: 0px; 
+    pointer-events:none;
+    background: linear-gradient(to top, map-get($theme-colors, 'light') 0%, transparent 100%);
+  }
+    
+}
+
+}
+
+
+
+body, html {
+  height:100%;
+}
+
+.h-100 {
+  min-height: 100%;
+}
+.bigfont {
+	font-size: 2em;
+}
