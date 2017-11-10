@@ -32,7 +32,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                 bot.sendMessage({ to: channelID, message: 'Morbleu!' });
             break;
             default:
-                bot.sendMessage({ to: channelID, message: 'Unknown command.' });
+                bot.sendMessage({ to: channelID, message: 'ce que le ...? I don\'t know that command.' });
         }
     }
 })
