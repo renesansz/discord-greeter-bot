@@ -1,10 +1,10 @@
 {
   "name": "Bibot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Just for spamming Morbleu!",
   "main": "bot.js",
   "repository": "https://github.com/ssharker21/Bibot/",
-  "author": "Summit Sarkar",
+  "author": "Summit Sarkar and Bhargav GV",
   "license": "MIT",
   "dependencies": {
     "discord.io": "^2.5.1",
