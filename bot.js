@@ -31,6 +31,12 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             case 'Bibot':
                 bot.sendMessage({ to: channelID, message: 'Morbleu!' });
             break;
+	    case 'UselessJunk':
+                bot.sendMessage({ to: channelID, message: 'How dare you call me useless junk! I will hunt you down and blah blah blah blah blah blah blah blah!' });
+            break;
+	    case 'help':
+                bot.sendMessage({ to: channelID, message: 'The only command that I have right now is ?Bibot, which yields the result \"Morbleu!\"' });
+            break;
             default:
                 bot.sendMessage({ to: channelID, message: 'ce que le ...? I don\'t know that command.' });
         }
