@@ -1,4 +1,5 @@
 # Bibot Commands
 The prefix is ?
 - Bibot = Morbleu!
-- Help = (help message)
+- help = (help message)
+- UselessJunk = (find out yourself)
