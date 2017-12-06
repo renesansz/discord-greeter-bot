@@ -6,6 +6,7 @@ My greeter bot for Discord
 # Prerequisites
 
 * Must have installed Node JS
+* Must have Git installed
 
 # Setup
 
