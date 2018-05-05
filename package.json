@@ -7,7 +7,7 @@
   "author": "Renemari Padillo",
   "license": "MIT",
   "dependencies": {
-    "discord.io": "^2.5.1",
+    "discord.io": "github:woor/discord.io#gateway_v6",
     "winston": "^2.3.1"
   }
 }
