@@ -6,10 +6,12 @@ My greeter bot for Discord
 # Prerequisites
 
 * Must have installed Node JS
+* Must have Git installed
 
 # Setup
 
 * To install dependencies: `npm install`
+* Discord.io's gateway is currently broken so to run bots also run `npm install woor/discord.io#gateway_v6` in the main directory
 
 # Running Server
 
