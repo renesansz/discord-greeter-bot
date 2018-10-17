@@ -1,46 +1,49 @@
-var Discord = require('discord.io');
+const Discord = require('discord.io');
 
-var logger = require('winston');
-var auth = require('./auth.json');
+const logger = require('winston');
+const auth = require('./auth.json');
 
-
-// Configure logger settings
+/**
+ * Configure logger settings
+ */
 logger.remove(logger.transports.Console);
 logger.add(logger.transports.Console, {
-    colorize: true
+  colorize: true,
 });
 logger.level = 'debug';
 
-
-// Initialize Discord Bot
-var bot = new Discord.Client({
-    token: auth.token,
-    autorun: true
+/**
+ * Initialize Discord Bot
+ */
+const bot = new Discord.Client({
+  autorun: true,
+  token: auth.token,
 });
 
-
-bot.on('ready', function (evt) {
-    logger.info('Connected');
-    logger.info('Logged in as: ');
-    logger.info(bot.username + ' - (' + bot.id + ')');
+bot.on('ready', (evt) => {
+  logger.info('Connected');
+  logger.info('Logged in as: ');
+  logger.info(bot.username + ' - (' + bot.id + ')');
 });
 
-bot.on('message', function (user, userID, channelID, message, evt) {
-    // Our bot needs to know if it needs to execute a command
-    // for this script it will listen for messages that will start with `!`
-    if (message.substring(0, 1) == '!') {
-        var args = message.substring(1).split(' ');
-        var cmd = args[0];
+bot.on('message', (user, userID, channelID, message, evt) => {
+  /**
+   * Our bot needs to know if it needs to execute a command.
+   * For this script it will listen for messages that will start with `!`
+   */
+  if (message.substring(0, 1) == '!') {
+    const args = message.substring(1).split(' ');
+    const cmd = args[0];
 
-        args = args.splice(1);
+    args = args.splice(1);
 
-        switch(cmd) {
-            // !ping
-            case 'ping':
-                bot.sendMessage({ to: channelID, message: 'Pong!' });
-            break;
-            default:
-                bot.sendMessage({ to: channelID, message: 'Unknown command.' });
-        }
+    switch (cmd) {
+      // !ping
+      case 'ping':
+        bot.sendMessage({ to: channelID, message: 'Pong!' });
+        break;
+      default:
+        bot.sendMessage({ to: channelID, message: 'Unknown command.' });
     }
-})
+  }
+});
