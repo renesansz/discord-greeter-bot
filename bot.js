@@ -69,9 +69,12 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 		};
 		fs.writeFile('lists/'+title+'.txt', listmessage, (err) => {
 			if (err) throw err;
-			logger.info('Saved list: '+title);
 		});
+		logger.info('Saved list: '+title);
 	        bot.sendMessage({ to: channelID, message: listmessage });
+		title = "";
+		entries = [];
+		logger.info('Variables cleared');
 		break;
             default:
                 bot.sendMessage({ to: channelID, message: 'Unknown command.' });
