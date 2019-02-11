@@ -1,4 +1,4 @@
-![discord](https://discordapp.com/assets/dd4dbc0016779df1378e7812eabaa04d.png)
+<img src="https://images2.imgbox.com/a1/c2/pGy6ICJI_o.jpg" alt="alt text" width="300">
 
 # Zadelrazz
 Zadelrazz is a discord bot for making lists. Tell him when you are starting a new lists, and he will automatically save each new numbered entry. Finally, tell him when you're done and he'll spit out the whole thing.
