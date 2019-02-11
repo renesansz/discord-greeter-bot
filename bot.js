@@ -29,7 +29,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
     // Our bot needs to know if it needs to execute a command
     // for this script it will listen for messages that will start with `!`
     if (message.substring(0, 1) == '!') {
+	//take the message, chop the ! and split by spaces
         var args = message.substring(1).split(' ');
+	//the command is the first part
         var cmd = args[0];
 
         args = args.splice(1);
@@ -38,6 +40,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             // !ping
             case 'ping':
                 bot.sendMessage({ to: channelID, message: 'Pong!' });
+	    // !new [Title]
+	    case 'new':
+	        bot.sendMessage({ to: channelID, message: 'Starting new list: TITLE' });
             break;
             default:
                 bot.sendMessage({ to: channelID, message: 'Unknown command.' });
