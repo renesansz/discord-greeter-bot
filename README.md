@@ -11,21 +11,25 @@ Zadelrazz is a discord bot for making lists. Tell him when you are starting a ne
 !end
 
 # Todo
-* host online somewhere
-* make publicly invitable
-* record server of origin and entry contributors
+## Basic functionality
 * help command
-* switch to [eris](https://github.com/abalabahaha/eris)
-* output compiled lists to an additional specified channel
 * better readme
 * Behave better in between lists
-* roll on saved lists
-* Allow for list switching
+## High priority
 * Search saved list titles
+* roll on saved lists
+* record server of origin and entry authors
+## Low priority
+* output compiled lists to an additional specified channel
+* host online somewhere
+* make publicly invitable
+* switch to [eris](https://github.com/abalabahaha/eris)
 * Search saved list contents
+* Allow for list switching in a single channel
+* output to HTML, static pages or as wiki (or as tiddlywiki???)
 * Have lists refer to other lists
 * sort lists by server
-* output to HTML, static pages or as wiki (or as tiddlywiki???)
+
 
 # Prerequisites
 
