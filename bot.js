@@ -1,4 +1,5 @@
 var Discord = require('discord.io');
+var fs = require('fs');
 
 var logger = require('winston');
 var auth = require('./auth.json');
@@ -57,7 +58,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 	    case 'add':
 		entry = message.substring(5);
 		entries.push(entry);
-	        bot.sendMessage({ to: channelID, message: 'Adding entry'+entries.length+'to '+title });
+	        bot.sendMessage({ to: channelID, message: 'Adding #'+entries.length+' to '+title });
 		break;
 	    case 'end':
 		let listmessage = '';
@@ -65,8 +66,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 		for (var entrynum = 0; entrynum < entries.length; entrynum++) {
 		    let humnum = entrynum + 1;
 	            listmessage = listmessage + humnum+". "+entries[entrynum]+"\n";
-		}
-		listmessage = listmessage + "-----END-----"
+		};
+		fs.writeFile('lists/'+title+'.txt', listmessage, (err) => {
+			if (err) throw err;
+			logger.info('Saved list: '+title);
+		});
 	        bot.sendMessage({ to: channelID, message: listmessage });
 		break;
             default:
