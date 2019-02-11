@@ -3,7 +3,12 @@ var fs = require('fs');
 
 var logger = require('winston');
 var auth = require('./auth.json');
-
+var helpText =  "Commands:\n";
+helpText += "!new [NAME] : Start listening for entries to table NAME.\n";
+helpText += "    -> Each following message that begins with i., where i is an integer, will be added to the table.\n";
+helpText += "!title : Print the active table's name.\n";
+helpText += "!end : Close the active table, list its contents, and save them to the server.\n";
+helpText += "!help : Display this help message.\n";
 
 // Configure logger settings
 logger.remove(logger.transports.Console);
@@ -52,7 +57,7 @@ class RPGList {
     save() {
 	fs.writeFile('./lists/'+this.title+'.txt',
 			this.printable,
-			(err) => {  
+			(err) => {
 	    if (err) throw err;
 	    logger.info('saved lists/'+this.title+'.txt');
 	    })
@@ -90,10 +95,16 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 	        bot.sendMessage({
 			to: channelID,
 			message: lists[channelID].printable });
-		lists[channelID].save();
+		    lists[channelID].save();
 		break;
-            default:
-                bot.sendMessage({ to: channelID, message: 'Unknown command.' });
+        case 'help':
+            bot.sendMessage({
+                to: channelID,
+                message: helpText
+            });
+        break;
+        default:
+            bot.sendMessage({ to: channelID, message: 'Unknown command.\n' + helpText });
         }
     }
 
