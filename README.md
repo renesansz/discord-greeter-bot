@@ -19,6 +19,7 @@ Zadelrazz is a discord bot for making lists. Tell him when you are starting a ne
 * Search saved list titles
 * roll on saved lists
 * record server of origin and entry authors
+* crash handling/resume lists between sessions/save mid-entry
 ## Low priority
 * output compiled lists to an additional specified channel
 * host online somewhere
