@@ -26,6 +26,39 @@ bot.on('ready', function (evt) {
     logger.info(bot.username + ' - (' + bot.id + ')');
 });
 
+let lists = {};
+
+class RPGList {
+    constructor(title) {
+	    this.title = title;
+	    this.entries = [];
+    }
+
+    //add an entry to a list
+    addEntry(message) {
+	    this.entries.push(message);
+    }
+
+    //get a printable version with title and numbered entries
+    get printable(){
+	    let printable = this.title+"\n";
+            for (var entrynum = 0; entrynum < this.entries.length; entrynum++) {
+                let humnum = entrynum + 1;
+                printable = printable + humnum+". "+this.entries[entrynum]+"\n";
+            };
+	    return printable;
+    }
+
+    save() {
+	fs.writeFile('./lists/'+this.title+'.txt',
+			this.printable,
+			(err) => {  
+	    if (err) throw err;
+	    logger.info('saved lists/'+this.title+'.txt');
+	    })
+    }
+}
+
 let title = ''
 let entries = []
 
@@ -41,62 +74,44 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         args = args.splice(1);
 
         switch(cmd) {
-            // !ping
-            case 'ping':
-                bot.sendMessage({ to: channelID, message: 'Pong!' });
-		break;
 	    // !new Title of List
 	    case 'new':
 		title = message.substring(5);
-	        bot.sendMessage({ to: channelID, message: 'Starting new list: '+title });
+		lists[channelID] = new RPGList(title);
+	        bot.sendMessage({ to: channelID, message: 'Starting new list: '+lists[channelID].title });
 		break;
 	    // !title
 	    // Repeat the current title
 	    case 'title':
-	        bot.sendMessage({ to: channelID, message: 'Current title is: '+title });
+	        bot.sendMessage({ to: channelID, message: 'Current title is: '+lists[channelID].title });
 		break;
-	    case 'add':
-		entry = message.substring(5);
-		entries.push(entry);
-		bot.addReaction({
-	    	    channelID: channelID,
-		    messageID: evt.d.id,
-		    reaction: "🤖"
-		}, (err,res) => {
-		    if (err) logger.info(err)
-		});
-	        bot.sendMessage({ to: channelID, message: 'Adding #'+entries.length+' to '+title });
-		break;
+	    ///save the list and reprint it collated
 	    case 'end':
-		let listmessage = '';
-		listmessage = listmessage + title + "\n"
-		for (var entrynum = 0; entrynum < entries.length; entrynum++) {
-		    let humnum = entrynum + 1;
-	            listmessage = listmessage + humnum+". "+entries[entrynum]+"\n";
-		};
-		fs.writeFile('lists/'+title+'.txt', listmessage, (err) => {
-			if (err) throw err;
-		});
-		logger.info('Saved list: '+title);
-	        bot.sendMessage({ to: channelID, message: listmessage });
-		bot.uploadFile({ to: channelID, file: './lists/'+title+'.txt'});
-		title = "";
-		entries = [];
-		logger.info('Variables cleared');
+	        bot.sendMessage({
+			to: channelID,
+			message: lists[channelID].printable });
+		lists[channelID].save();
 		break;
             default:
                 bot.sendMessage({ to: channelID, message: 'Unknown command.' });
         }
     }
 
+    //catch list entries that are just a number and a dot
     let dotsplits = message.split('.');
     if (dotsplits[0].length > 0 && !isNaN(dotsplits[0])) {
-        logger.info('WE GOT A NUMBER, CAP\'N');
 	let entrytext = message.substring(message.indexOf(".")+1);
 	entrytext = entrytext.trim();
+	bot.addReaction({
+	    channelID: channelID,
+	    messageID: evt.d.id,
+	    reaction: "🤖"
+	}, (err,res) => {
+	    if (err) logger.info(err)
+	});
 	logger.info('The entry is: '+entrytext);
-	entries.push(entrytext);
-	bot.sendMessage({ to: channelID, message: 'Adding #'+entries.length+' to '+title });
+	lists[channelID].addEntry(entrytext);
+	// bot.sendMessage({ to: channelID, message: 'Adding #'+lists[channelID].entries.length+' to '+lists[channelID].title });
 
     }
 
