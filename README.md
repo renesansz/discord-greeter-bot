@@ -11,6 +11,7 @@ Zadelrazz is a discord bot for making lists. Tell him when you are starting a ne
 !end
 
 # Todo
+* better readme
 * Behave better in between lists
 * roll on saved lists
 * Allow for list switching
