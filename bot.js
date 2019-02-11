@@ -25,6 +25,7 @@ bot.on('ready', function (evt) {
     logger.info(bot.username + ' - (' + bot.id + ')');
 });
 
+
 bot.on('message', function (user, userID, channelID, message, evt) {
     // Our bot needs to know if it needs to execute a command
     // for this script it will listen for messages that will start with `!`
@@ -42,7 +43,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                 bot.sendMessage({ to: channelID, message: 'Pong!' });
 	    // !new [Title]
 	    case 'new':
-	        bot.sendMessage({ to: channelID, message: 'Starting new list: TITLE' });
+		let title = message.substring(5);
+	        bot.sendMessage({ to: channelID, message: 'Starting new list: '+title });
             break;
             default:
                 bot.sendMessage({ to: channelID, message: 'Unknown command.' });
