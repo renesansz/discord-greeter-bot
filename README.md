@@ -1,7 +1,24 @@
 ![discord](https://discordapp.com/assets/dd4dbc0016779df1378e7812eabaa04d.png)
 
-# discord-greeter-bot
-My greeter bot for Discord
+# Zadelrazz
+Zadelrazz is a discord bot for making lists. Tell him when you are starting a new lists, and he will automatically save each new numbered entry. Finally, tell him when you're done and he'll spit out the whole thing.
+
+# Commands
+!new list title
+
+42. List entry
+
+!end
+
+# Todo
+* Behave better in between lists
+* roll on saved lists
+* Allow for list switching
+* Search saved list titles
+* Search saved list contents
+* Have lists refer to other lists
+* sort lists by server
+* output to HTML, static pages or as wiki (or as tiddlywiki???)
 
 # Prerequisites
 
