@@ -26,7 +26,7 @@ bot.on('ready', function (evt) {
     logger.info(bot.username + ' - (' + bot.id + ')');
 });
 
-let lists = {};
+let lists = require("./listlist.json");
 
 class RPGList {
     constructor(title) {
@@ -62,6 +62,8 @@ class RPGList {
 let title = ''
 let entries = []
 
+
+
 bot.on('message', function (user, userID, channelID, message, evt) {
     // Our bot needs to know if it needs to execute a command
     // for this script it will listen for messages that will start with `!`
@@ -78,6 +80,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 	    case 'new':
 		title = message.substring(5);
 		lists[channelID] = new RPGList(title);
+		let jsonLists = JSON.stringify(lists);
+		logger.info(jsonLists);
+		fs.writeFile('listlist.json',
+				jsonLists,
+				(err) => {
+					if (err) throw err;
+				});
 	        bot.sendMessage({ to: channelID, message: 'Starting new list: '+lists[channelID].title });
 		break;
 	    // !title
