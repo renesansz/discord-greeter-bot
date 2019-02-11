@@ -11,6 +11,7 @@ Zadelrazz is a discord bot for making lists. Tell him when you are starting a ne
 !end
 
 # Todo
+* help command
 * switch to [eris](https://github.com/abalabahaha/eris)
 * output compiled lists to an additional specified channel
 * better readme
