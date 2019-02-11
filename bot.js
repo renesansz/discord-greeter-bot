@@ -58,7 +58,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 	    case 'add':
 		entry = message.substring(5);
 		entries.push(entry);
-		bot.addReaction({channelID: channelID, messageID: evt.d.id, reaction: "🤖"});
+		bot.addReaction({
+	    	    channelID: channelID,
+		    messageID: evt.d.id,
+		    reaction: "🤖"
+		}, (err,res) => {
+		    if (err) logger.info(err)
+		});
 	        bot.sendMessage({ to: channelID, message: 'Adding #'+entries.length+' to '+title });
 		break;
 	    case 'end':
