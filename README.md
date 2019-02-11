@@ -11,6 +11,8 @@ Zadelrazz is a discord bot for making lists. Tell him when you are starting a ne
 !end
 
 # Todo
+* host online somewhere
+* make publicly invitable
 * record server of origin and entry contributors
 * help command
 * switch to [eris](https://github.com/abalabahaha/eris)
