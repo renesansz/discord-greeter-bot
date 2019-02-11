@@ -58,6 +58,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 	    case 'add':
 		entry = message.substring(5);
 		entries.push(entry);
+		bot.addReaction({channelID: channelID, messageID: evt.d.id, reaction: "🤖"});
 	        bot.sendMessage({ to: channelID, message: 'Adding #'+entries.length+' to '+title });
 		break;
 	    case 'end':
@@ -72,6 +73,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 		});
 		logger.info('Saved list: '+title);
 	        bot.sendMessage({ to: channelID, message: listmessage });
+		bot.uploadFile({ to: channelID, file: './lists/'+title+'.txt'});
 		title = "";
 		entries = [];
 		logger.info('Variables cleared');
@@ -80,4 +82,16 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                 bot.sendMessage({ to: channelID, message: 'Unknown command.' });
         }
     }
+
+    let dotsplits = message.split('.');
+    if (dotsplits[0].length > 0 && !isNaN(dotsplits[0])) {
+        logger.info('WE GOT A NUMBER, CAP\'N');
+	let entrytext = message.substring(message.indexOf(".")+1);
+	entrytext = entrytext.trim();
+	logger.info('The entry is: '+entrytext);
+	entries.push(entrytext);
+	bot.sendMessage({ to: channelID, message: 'Adding #'+entries.length+' to '+title });
+
+    }
+
 })
