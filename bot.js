@@ -26,17 +26,24 @@ bot.on('ready', function (evt) {
     logger.info(bot.username + ' - (' + bot.id + ')');
 });
 
-let lists = require("./listlist.json");
-
 class RPGList {
-    constructor(title) {
+    constructor(title, channelID) {
+	    this.channelID = channelID
 	    this.title = title;
+	    this.path = "./lists/"+channelID+"/"+title+".json"
 	    this.entries = [];
+	    this.save();
+	    fs.mkdir("./lists/"+channelID,
+	              { recursive: true }, (err) => {
+		      if (err) throw err;
+	    });
+	    logger.info("initialized "+this.path);
     }
 
     //add an entry to a list
     addEntry(message) {
 	    this.entries.push(message);
+	    this.save();
     }
 
     //get a printable version with title and numbered entries
@@ -49,20 +56,47 @@ class RPGList {
 	    return printable;
     }
 
+    get json(){
+	    return JSON.stringify(this);
+    }
+
+    load(path) {
+	    this.entries = require(this.path);
+    }
+
     save() {
-	fs.writeFile('./lists/'+this.title+'.txt',
-			this.printable,
+	fs.writeFile(this.path,
+			this.json,
 			(err) => {  
 	    if (err) throw err;
-	    logger.info('saved lists/'+this.title+'.txt');
+	    logger.info('saved '+this.path);
 	    })
     }
 }
 
+//start activelists as blank, to contain list objects
+let activelists = {};
+
+//initialize titles from the last known list of active tables
+//let titles = require("./titles.json")
+let titles = {};
+
+logger.info("Loading lists according to titles.json:");
+logger.info(titles);
+
+//for each active title, load that list from file
+/*
+for (var key in titles) {
+	logger.info("loading "+titles[key]+" for channelID "+key);
+	let newlist = new RPGList(titles[key], key);
+	newlist.load("./lists/"+key+"/"+titles[key]);
+	logger.info("success");
+}
+*/
+
+
 let title = ''
 let entries = []
-
-
 
 bot.on('message', function (user, userID, channelID, message, evt) {
     // Our bot needs to know if it needs to execute a command
@@ -79,20 +113,19 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 	    // !new Title of List
 	    case 'new':
 		title = message.substring(5);
-		lists[channelID] = new RPGList(title);
-		let jsonLists = JSON.stringify(lists);
-		logger.info(jsonLists);
-		fs.writeFile('listlist.json',
-				jsonLists,
+		titles[channelID] = title;
+		activelists[channelID] = new RPGList(title, channelID);
+		fs.writeFile('titles.json',
+				JSON.stringify(titles),
 				(err) => {
 					if (err) throw err;
 				});
-	        bot.sendMessage({ to: channelID, message: 'Starting new list: '+lists[channelID].title });
+	        bot.sendMessage({ to: channelID, message: 'Starting: '+titles[channelID] });
 		break;
 	    // !title
 	    // Repeat the current title
 	    case 'title':
-	        bot.sendMessage({ to: channelID, message: 'Current title is: '+lists[channelID].title });
+	        bot.sendMessage({ to: channelID, message: 'Current: '+titles[channelID] });
 		break;
 	    ///save the list and reprint it collated
 	    case 'end':
@@ -120,6 +153,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 	});
 	logger.info('The entry is: '+entrytext);
 	lists[channelID].addEntry(entrytext);
+	logger.info(lists[channelID].json);
 	// bot.sendMessage({ to: channelID, message: 'Adding #'+lists[channelID].entries.length+' to '+lists[channelID].title });
 
     }
