@@ -3,12 +3,12 @@ var fs = require('fs');
 
 var logger = require('winston');
 var auth = require('./auth.json');
-var helpText =  "Commands:\n";
-helpText += "!new [NAME] : Start listening for entries to table NAME.\n";
-helpText += "    -> Each following message that begins with i., where i is an integer, will be added to the table.\n";
-helpText += "!title : Print the active table's name.\n";
-helpText += "!end : Close the active table, list its contents, and save them to the server.\n";
-helpText += "!help : Display this help message.\n";
+var helpText =  `Commands:
+!new [NAME] : Start listening for entries to table NAME.
+    -> Each following message that begins with i., where i is an integer, will be added to the table.
+!title : Print the active table's name.
+!end : Close the active table, list its contents, and save them to the server.
+!help : Display this help message.`;
 
 // Configure logger settings
 logger.remove(logger.transports.Console);

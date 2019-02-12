@@ -4,22 +4,19 @@
 Zadelrazz is a discord bot for making lists. Tell him when you are starting a new lists, and he will automatically save each new numbered entry. Finally, tell him when you're done and he'll spit out the whole thing.
 
 # Commands
-!new list title
-
-42. List entry
-
-!end
+See !help for an up-to-date list of commands and options.
 
 # Todo
 ## Critical
 * crash handling/resume lists between sessions/save mid-entry
+
 ## High priority
-* help command
 * better readme
 * Behave better in between lists
 * Search saved list titles
 * roll on saved lists
 * record server of origin and entry authors
+
 ## Low priority
 * output compiled lists to an additional specified channel
 * host online somewhere
