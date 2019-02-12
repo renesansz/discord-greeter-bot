@@ -127,7 +127,11 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 	    // !title
 	    // Repeat the current title
 	    case 'title':
-	        bot.sendMessage({ to: channelID, message: 'Current: '+titles[channelID] });
+		if (channelID in activeLists) {
+			bot.sendMessage({ to: channelID, message: 'Current: '+titles[channelID] });
+		} else {
+			bot.sendMessage({ to: channelID, message: 'No known list for this channel'});
+		}
 		break;
 	    ///save the list and reprint it collated
 	    case 'end':
@@ -144,18 +148,22 @@ bot.on('message', function (user, userID, channelID, message, evt) {
     //catch list entries that are just a number and a dot
     let dotsplits = message.split('.');
     if (dotsplits[0].length > 0 && !isNaN(dotsplits[0])) {
-	let entrytext = message.substring(message.indexOf(".")+1);
-	entrytext = entrytext.trim();
-	bot.addReaction({
-	    channelID: channelID,
-	    messageID: evt.d.id,
-	    reaction: "🤖"
-	}, (err,res) => {
-	    if (err) logger.info(err)
-	});
-	logger.info('The entry is: '+entrytext);
-	activeLists[channelID].addEntry(entrytext);
-	logger.info(activeLists[channelID].json);
+	if (channelID in activeLists) {
+	    let entrytext = message.substring(message.indexOf(".")+1);
+	    entrytext = entrytext.trim();
+	    bot.addReaction({
+	        channelID: channelID,
+	        messageID: evt.d.id,
+	        reaction: "🤖"
+	    }, (err,res) => {
+	        if (err) logger.info(err)
+	    });
+	    logger.info('The entry is: '+entrytext);
+	    logger.info(activeLists[channelID].json);
+	    activeLists[channelID].addEntry(entrytext);
+	} else {
+		logger.info('ignoring message until list declaration');
+	}
 	// bot.sendMessage({ to: channelID, message: 'Adding #'+lists[channelID].entries.length+' to '+lists[channelID].title });
 
     }
