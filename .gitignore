@@ -60,3 +60,7 @@ typings/
 auth.json
 package-lock.json
 lists/
+listlist.json
+channels.json
+titles.json
+titles.json.bak
