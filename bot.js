@@ -30,10 +30,9 @@ class RPGList {
     constructor(title, channelID) {
 	    this.channelID = channelID
 	    this.title = title;
-	    this.path = "./lists/"+channelID+"/"+title+".json"
+	    this.path = __dirname+"/lists/"+channelID+"/"+title+".json"
 	    this.entries = [];
-	    this.save();
-	    fs.mkdir("./lists/"+channelID,
+	    fs.mkdir(__dirname+"/lists/"+channelID,
 	              { recursive: true }, (err) => {
 		      if (err) throw err;
 	    });
@@ -66,7 +65,8 @@ class RPGList {
 
     save() {
 	fs.writeFile(this.path,
-			this.json,
+			JSON.stringify(this.entries),
+			//this.json,
 			(err) => {  
 	    if (err) throw err;
 	    logger.info('saved '+this.path);
@@ -75,24 +75,26 @@ class RPGList {
 }
 
 //start activelists as blank, to contain list objects
-let activelists = {};
+let activeLists = {};
 
 //initialize titles from the last known list of active tables
-//let titles = require("./titles.json")
-let titles = {};
+//this will fail bad if titles.json hasn't yet been created
+//let titles = {};
+let titles = require("./titles.json")
 
 logger.info("Loading lists according to titles.json:");
 logger.info(titles);
 
 //for each active title, load that list from file
-/*
+//key = channelID, titles[key] = title
 for (var key in titles) {
 	logger.info("loading "+titles[key]+" for channelID "+key);
 	let newlist = new RPGList(titles[key], key);
 	newlist.load("./lists/"+key+"/"+titles[key]);
+	activeLists[key] = newlist;
 	logger.info("success");
 }
-*/
+
 
 
 let title = ''
@@ -114,7 +116,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 	    case 'new':
 		title = message.substring(5);
 		titles[channelID] = title;
-		activelists[channelID] = new RPGList(title, channelID);
+		activeLists[channelID] = new RPGList(title, channelID);
 		fs.writeFile('titles.json',
 				JSON.stringify(titles),
 				(err) => {
@@ -131,8 +133,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 	    case 'end':
 	        bot.sendMessage({
 			to: channelID,
-			message: lists[channelID].printable });
-		lists[channelID].save();
+			message: activeLists[channelID].printable });
+		activeLists[channelID].save();
 		break;
             default:
                 bot.sendMessage({ to: channelID, message: 'Unknown command.' });
@@ -152,8 +154,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 	    if (err) logger.info(err)
 	});
 	logger.info('The entry is: '+entrytext);
-	lists[channelID].addEntry(entrytext);
-	logger.info(lists[channelID].json);
+	activeLists[channelID].addEntry(entrytext);
+	logger.info(activeLists[channelID].json);
 	// bot.sendMessage({ to: channelID, message: 'Adding #'+lists[channelID].entries.length+' to '+lists[channelID].title });
 
     }
