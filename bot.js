@@ -1,6 +1,6 @@
 class RPGList {
     constructor(title, channelID) {
-	    this.channelID = channelID
+	    this.channelID = channelID;
 	    this.title = title;
 	    this.path = __dirname+"/lists/"+channelID+"/"+title+".json"
 	    this.entries = [];
@@ -9,8 +9,12 @@ class RPGList {
 		      if (err) throw err;
 	    });
 	    logger.info("initialized "+this.path);
-        // Write to file to avoid bugs in case of crash
-        this.save();
+        // If the file exists, load it; otherwise, save a blank file
+        if (fs.existsSync(this.path)) {
+            this.load();
+        } else {
+            this.save();
+        }
     }
 
     //add an entry to a list
@@ -33,7 +37,7 @@ class RPGList {
 	    return JSON.stringify(this);
     }
 
-    load(path) {
+    load() {
         // Make sure this.path isn't an empty file so loading JSON
         // doesn't break everything
         if (fs.statSync(this.path)["size"] != 0) {
@@ -84,12 +88,11 @@ class Zadelrazz {
         //for each active title, load that list from file
         //key = channelID, titles[key] = title
         var activeLists = {};
-        for (var listName in titles) {
-        	logger.info("loading "+titles[listName]+" for channelID "+listName);
-            this.listeningForListItems[listName] = true
-        	let newlist = new RPGList(titles[listName], listName);
-        	newlist.load("./lists/" + listName + "/" + titles[listName]);
-        	activeLists[listName] = newlist;
+        for (var channelID in titles) {
+        	logger.info("loading "+titles[channelID]+" for channelID "+channelID);
+            this.listeningForListItems[channelID] = true
+        	let newlist = new RPGList(titles[channelID], channelID);
+        	activeLists[channelID] = newlist;
         	logger.info("success");
         }
         return activeLists;
