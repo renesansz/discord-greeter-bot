@@ -3,12 +3,6 @@ var fs = require('fs');
 
 var logger = require('winston');
 var auth = require('./auth.json');
-var helpText =  `Commands:
-!new [NAME] : Start listening for entries to table NAME.
-    -> Each following message that begins with i., where i is an integer, will be added to the table.
-!title : Print the active table's name.
-!end : Close the active table, list its contents, and save them to the server.
-!help : Display this help message.`;
 
 // Configure logger settings
 logger.remove(logger.transports.Console);
@@ -30,6 +24,56 @@ bot.on('ready', function (evt) {
     logger.info('Logged in as: ');
     logger.info(bot.username + ' - (' + bot.id + ')');
 });
+
+class Zadelrazz {
+    constructor(discordClient) {
+        this.bot = discordClient;
+        this.helpText = "Commands:"
+        + "\n!new [NAME] : Start listening for entries to table NAME."
+        + "\n    -> Each following message that begins with i., where i is an integer, will be added to the table."
+        + "\n!title : Print the active table's name."
+        + "\n!end : Close the active table, list its contents, and save them to the server."
+        + "\n!help : Display this help message.";
+    }
+    newList(title, channelID) {
+        titles[channelID] = title;
+        activeLists[channelID] = new RPGList(title, channelID);
+        fs.writeFile('titles.json',
+            JSON.stringify(titles),
+            (err) => { if (err) throw err; }
+        );
+        this.bot.sendMessage({
+            to: channelID,
+            message: 'Starting: '+titles[channelID]
+        });
+    }
+    sendActiveTitle(channelID) {
+        if (channelID in activeLists) {
+            this.bot.sendMessage({
+                to: channelID,
+                message: 'Current: '+titles[channelID]
+            });
+        } else {
+            this.bot.sendMessage({
+                to: channelID,
+                message: 'No known list for this channel'
+            });
+        }
+    }
+    endActiveList(channelID) {
+        this.bot.sendMessage({
+            to: channelID,
+            message: activeLists[channelID].printable
+        });
+        activeLists[channelID].save();
+    }
+    sendHelpText(channelID) {
+        bot.sendMessage({
+            to: channelID,
+            message: this.helpText
+        });
+    }
+}
 
 class RPGList {
     constructor(title, channelID) {
@@ -69,14 +113,12 @@ class RPGList {
     }
 
     save() {
-
-	fs.writeFile(this.path,
-			JSON.stringify(this.entries),
-			//this.json,
-			(err) => {  
-	    if (err) throw err;
-	    logger.info('saved '+this.path);
-	    })
+    	fs.writeFile(
+                this.path,
+    			JSON.stringify(this.entries),
+    			(err) => { if (err) throw err;
+    	                   logger.info('saved '+this.path); }
+            )
     }
 }
 
@@ -86,7 +128,11 @@ let activeLists = {};
 //initialize titles from the last known list of active tables
 //this will fail bad if titles.json hasn't yet been created
 //let titles = {};
-let titles = require("./titles.json")
+if (fs.existsSync("./titles.json")) {
+    var titles = require("./titles.json")
+} else {
+    var titles = {};
+}
 
 logger.info("Loading lists according to titles.json:");
 logger.info(titles);
@@ -103,81 +149,60 @@ for (var key in titles) {
 
 
 
-let title = ''
-let entries = []
+let title = '';
+let entries = [];
+var zd = new Zadelrazz(bot);
 
 bot.on('message', function (user, userID, channelID, message, evt) {
-    // Our bot needs to know if it needs to execute a command
-    // for this script it will listen for messages that will start with `!`
+    // Listen for messages that start with `!` and process the first word
+    // as a command
     if (message.substring(0, 1) == '!') {
-	//take the message, chop the ! and split by spaces
         var args = message.substring(1).split(' ');
-	//the command is the first part
         var cmd = args[0];
-
         args = args.splice(1);
 
         switch(cmd) {
-	    // !new Title of List
+	    // !new [title]
 	    case 'new':
-		title = message.substring(5);
-		titles[channelID] = title;
-		activeLists[channelID] = new RPGList(title, channelID);
-		fs.writeFile('titles.json',
-				JSON.stringify(titles),
-				(err) => {
-					if (err) throw err;
-				});
-	        bot.sendMessage({ to: channelID, message: 'Starting: '+titles[channelID] });
-		break;
-	    // !title
-	    // Repeat the current title
+    		title = message.substring(5);
+    		zd.newList(title, channelID);
+    		break;
 	    case 'title':
-		if (channelID in activeLists) {
-			bot.sendMessage({ to: channelID, message: 'Current: '+titles[channelID] });
-		} else {
-			bot.sendMessage({ to: channelID, message: 'No known list for this channel'});
-		}
-		break;
+    		zd.sendActiveTitle(channelID);
+    		break;
 	    ///save the list and reprint it collated
 	    case 'end':
-	        bot.sendMessage({
-			to: channelID,
-
-			message: activeLists[channelID].printable });
-		activeLists[channelID].save();
-		break;
+            zd.endActiveList(channelID);
+    		break;
         case 'help':
-            bot.sendMessage({
-                to: channelID,
-                message: helpText
-            });
-        break;
+            zd.sendHelpText(channelID);
+            break;
         default:
-            bot.sendMessage({ to: channelID, message: 'Unknown command.\n' + helpText });
+            bot.sendMessage({ to: channelID, message: 'Unknown command.' });
+            zd.sendHelpText();
         }
     }
 
     //catch list entries that are just a number and a dot
     let dotsplits = message.split('.');
     if (dotsplits[0].length > 0 && !isNaN(dotsplits[0])) {
-	if (channelID in activeLists) {
-	    let entrytext = message.substring(message.indexOf(".")+1);
-	    entrytext = entrytext.trim();
-	    bot.addReaction({
-	        channelID: channelID,
-	        messageID: evt.d.id,
-	        reaction: "🤖"
-	    }, (err,res) => {
-	        if (err) logger.info(err)
-	    });
-	    logger.info('The entry is: '+entrytext);
-	    logger.info(activeLists[channelID].json);
-	    activeLists[channelID].addEntry(entrytext);
-	} else {
-		logger.info('ignoring message until list declaration');
-	}
-	// bot.sendMessage({ to: channelID, message: 'Adding #'+lists[channelID].entries.length+' to '+lists[channelID].title });
+    	if (channelID in activeLists) {
+    	    let entrytext = message.substring(message.indexOf(".")+1);
+    	    entrytext = entrytext.trim();
+    	    bot.addReaction({
+    	        channelID: channelID,
+    	        messageID: evt.d.id,
+    	        reaction: "🤖"
+    	    }, (err,res) => {
+    	        if (err) logger.info(err)
+    	    });
+    	    logger.info('The entry is: '+entrytext);
+    	    logger.info(activeLists[channelID].json);
+    	    activeLists[channelID].addEntry(entrytext);
+    	} else {
+    		logger.info('ignoring message until list declaration');
+    	}
+    	// bot.sendMessage({ to: channelID, message: 'Adding #'+lists[channelID].entries.length+' to '+lists[channelID].title });
 
     }
 
