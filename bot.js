@@ -9,6 +9,8 @@ class RPGList {
 		      if (err) throw err;
 	    });
 	    logger.info("initialized "+this.path);
+        // Write to file to avoid bugs in case of crash
+        this.save();
     }
 
     //add an entry to a list
@@ -32,23 +34,36 @@ class RPGList {
     }
 
     load(path) {
-	    this.entries = require(this.path);
+        // Make sure this.path isn't an empty file so loading JSON
+        // doesn't break everything
+        if (fs.statSync(this.path)["size"] != 0) {
+	           this.entries = require(this.path);
+        }
     }
 
     save() {
-    	fs.writeFile(
+        if (this.entries.length == 0) {
+            fs.writeFile(
+                this.path,
+                "[]",
+                (err) => { if (err) throw err;
+                           logger.info('saved '+this.path); }
+            );
+        } else {
+    	    fs.writeFile(
                 this.path,
     			JSON.stringify(this.entries),
     			(err) => { if (err) throw err;
     	                   logger.info('saved '+this.path); }
-            )
+            );
+        }
     }
 }
 
 class Zadelrazz {
     constructor(discordClient) {
         this.bot = discordClient;
-        this.listeningForListItems = false;
+        this.listeningForListItems = {};
         this.helpText = "Commands:"
         + "\n!new [NAME] : Start listening for entries to table NAME."
         + "\n    -> Each following message that begins with i., where i is an integer, will be added to the table."
@@ -69,14 +84,21 @@ class Zadelrazz {
         //for each active title, load that list from file
         //key = channelID, titles[key] = title
         var activeLists = {};
-        for (var key in titles) {
-        	logger.info("loading "+titles[key]+" for channelID "+key);
-        	let newlist = new RPGList(titles[key], key);
-        	newlist.load("./lists/"+key+"/"+titles[key]);
-        	activeLists[key] = newlist;
+        for (var listName in titles) {
+        	logger.info("loading "+titles[listName]+" for channelID "+listName);
+            this.listeningForListItems[listName] = true
+        	let newlist = new RPGList(titles[listName], listName);
+        	newlist.load("./lists/" + listName + "/" + titles[listName]);
+        	activeLists[listName] = newlist;
         	logger.info("success");
         }
         return activeLists;
+    }
+    writeTitlesToJSON(titles) {
+        fs.writeFile('titles.json',
+            JSON.stringify(titles),
+            (err) => { if (err) throw err; }
+        );
     }
     newList(channelID, title) {
         // If this channel already has a list open, close it
@@ -84,20 +106,17 @@ class Zadelrazz {
             this.endActiveList(channelID)
         }
         // Then, bombs away!
-        this.listeningForListItems = true
+        this.listeningForListItems[channelID] = true
         titles[channelID] = title;
+        this.writeTitlesToJSON(titles);
         activeLists[channelID] = new RPGList(title, channelID);
-        fs.writeFile('titles.json',
-            JSON.stringify(titles),
-            (err) => { if (err) throw err; }
-        );
         this.bot.sendMessage({
             to: channelID,
             message: 'Starting: ' + titles[channelID]
         });
     }
     sendActiveTitle(channelID) {
-        if (this.listeningForListItems && channelID in activeLists) {
+        if (this.listeningForListItems[channelID] && channelID in activeLists) {
             this.bot.sendMessage({
                 to: channelID,
                 message: 'Current: '+titles[channelID]
@@ -110,7 +129,7 @@ class Zadelrazz {
         }
     }
     processListItem(channelID, message, evt) {
-        if (this.listeningForListItems && channelID in activeLists) {
+        if (this.listeningForListItems[channelID] && channelID in activeLists) {
             let entrytext = message.substring(message.indexOf(".")+1);
             entrytext = entrytext.trim();
             bot.addReaction({
@@ -134,7 +153,9 @@ class Zadelrazz {
         });
         activeLists[channelID].save();
         delete activeLists[channelID];
-        this.listeningForListItems = false;
+        delete titles[channelID];
+        this.writeTitlesToJSON(titles);
+        this.listeningForListItems[channelID] = false;
     }
     sendHelpText(channelID) {
         bot.sendMessage({
