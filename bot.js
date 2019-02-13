@@ -1,14 +1,14 @@
 class RPGList {
     constructor(title, channelID) {
-	    this.channelID = channelID;
-	    this.title = title;
-	    this.path = __dirname+"/lists/"+channelID+"/"+title+".json"
-	    this.entries = [];
-	    fs.mkdir(__dirname+"/lists/"+channelID,
-	              { recursive: true }, (err) => {
-		      if (err) throw err;
-	    });
-	    logger.info("initialized "+this.path);
+        this.channelID = channelID;
+        this.title = title;
+        this.path = __dirname+"/lists/"+channelID+"/"+title+".json"
+        this.entries = [];
+        fs.mkdir(__dirname+"/lists/"+channelID,
+                  { recursive: true }, (err) => {
+              if (err) throw err;
+        });
+        logger.info("initialized "+this.path);
         // If the file exists, load it; otherwise, save a blank file
         if (fs.existsSync(this.path)) {
             this.load();
@@ -19,29 +19,29 @@ class RPGList {
 
     //add an entry to a list
     addEntry(message) {
-	    this.entries.push(message);
-	    this.save();
+        this.entries.push(message);
+        this.save();
     }
 
     //get a printable version with title and numbered entries
     get printable(){
-	    let printable = this.title+"\n";
+        let printable = this.title+"\n";
             for (var entrynum = 0; entrynum < this.entries.length; entrynum++) {
                 let humnum = entrynum + 1;
                 printable = printable + humnum+". "+this.entries[entrynum]+"\n";
             };
-	    return printable;
+        return printable;
     }
 
     get json(){
-	    return JSON.stringify(this);
+        return JSON.stringify(this);
     }
 
     load() {
         // Make sure this.path isn't an empty file so loading JSON
         // doesn't break everything
         if (fs.statSync(this.path)["size"] != 0) {
-	           this.entries = require(this.path);
+               this.entries = require(this.path);
         }
     }
 
@@ -54,11 +54,11 @@ class RPGList {
                            logger.info('saved '+this.path); }
             );
         } else {
-    	    fs.writeFile(
+            fs.writeFile(
                 this.path,
-    			JSON.stringify(this.entries),
-    			(err) => { if (err) throw err;
-    	                   logger.info('saved '+this.path); }
+                JSON.stringify(this.entries),
+                (err) => { if (err) throw err;
+                           logger.info('saved '+this.path); }
             );
         }
     }
@@ -89,11 +89,11 @@ class Zadelrazz {
         //key = channelID, titles[key] = title
         var activeLists = {};
         for (var channelID in titles) {
-        	logger.info("loading "+titles[channelID]+" for channelID "+channelID);
+            logger.info("loading "+titles[channelID]+" for channelID "+channelID);
             this.listeningForListItems[channelID] = true
-        	let newlist = new RPGList(titles[channelID], channelID);
-        	activeLists[channelID] = newlist;
-        	logger.info("success");
+            let newlist = new RPGList(titles[channelID], channelID);
+            activeLists[channelID] = newlist;
+            logger.info("success");
         }
         return activeLists;
     }
@@ -214,18 +214,18 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         args = args.splice(1);
 
         switch(cmd) {
-    	    // !new [title]
-    	    case 'new':
-        		title = message.substring(5);
-        		zd.newList(channelID, title);
-        		break;
-    	    case 'title':
-        		zd.sendActiveTitle(channelID);
-        		break;
-    	    // save the list and reprint it collated
-    	    case 'end':
+            // !new [title]
+            case 'new':
+                title = message.substring(5);
+                zd.newList(channelID, title);
+                break;
+            case 'title':
+                zd.sendActiveTitle(channelID);
+                break;
+            // save the list and reprint it collated
+            case 'end':
                 zd.endActiveList(channelID);
-        		break;
+                break;
             case 'help':
                 zd.sendHelpText(channelID);
                 break;
