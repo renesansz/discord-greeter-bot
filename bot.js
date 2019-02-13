@@ -1,29 +1,49 @@
-var Discord = require('discord.io');
-var fs = require('fs');
+class RPGList {
+    constructor(title, channelID) {
+	    this.channelID = channelID
+	    this.title = title;
+	    this.path = __dirname+"/lists/"+channelID+"/"+title+".json"
+	    this.entries = [];
+	    fs.mkdir(__dirname+"/lists/"+channelID,
+	              { recursive: true }, (err) => {
+		      if (err) throw err;
+	    });
+	    logger.info("initialized "+this.path);
+    }
 
-var logger = require('winston');
-var auth = require('./auth.json');
+    //add an entry to a list
+    addEntry(message) {
+	    this.entries.push(message);
+	    this.save();
+    }
 
-// Configure logger settings
-logger.remove(logger.transports.Console);
-logger.add(logger.transports.Console, {
-    colorize: true
-});
-logger.level = 'debug';
+    //get a printable version with title and numbered entries
+    get printable(){
+	    let printable = this.title+"\n";
+            for (var entrynum = 0; entrynum < this.entries.length; entrynum++) {
+                let humnum = entrynum + 1;
+                printable = printable + humnum+". "+this.entries[entrynum]+"\n";
+            };
+	    return printable;
+    }
 
+    get json(){
+	    return JSON.stringify(this);
+    }
 
-// Initialize Discord Bot
-var bot = new Discord.Client({
-    token: auth.token,
-    autorun: true
-});
+    load(path) {
+	    this.entries = require(this.path);
+    }
 
-
-bot.on('ready', function (evt) {
-    logger.info('Connected');
-    logger.info('Logged in as: ');
-    logger.info(bot.username + ' - (' + bot.id + ')');
-});
+    save() {
+    	fs.writeFile(
+                this.path,
+    			JSON.stringify(this.entries),
+    			(err) => { if (err) throw err;
+    	                   logger.info('saved '+this.path); }
+            )
+    }
+}
 
 class Zadelrazz {
     constructor(discordClient) {
@@ -35,6 +55,28 @@ class Zadelrazz {
         + "\n!title : Print the active table's name."
         + "\n!end : Close the active table, list its contents, and save them to the server."
         + "\n!help : Display this help message.";
+    }
+    initializeTitles(logger) {
+        var titles = {};
+        logger.info("Loading lists according to titles.json:");
+        if (fs.existsSync("./titles.json")) {
+            titles = require("./titles.json");
+        }
+        logger.info(titles);
+        return titles;
+    }
+    loadActiveListsFromTitles(titles, logger) {
+        //for each active title, load that list from file
+        //key = channelID, titles[key] = title
+        var activeLists = {};
+        for (var key in titles) {
+        	logger.info("loading "+titles[key]+" for channelID "+key);
+        	let newlist = new RPGList(titles[key], key);
+        	newlist.load("./lists/"+key+"/"+titles[key]);
+        	activeLists[key] = newlist;
+        	logger.info("success");
+        }
+        return activeLists;
     }
     newList(channelID, title) {
         // If this channel already has a list open, close it
@@ -102,89 +144,43 @@ class Zadelrazz {
     }
 }
 
-class RPGList {
-    constructor(title, channelID) {
-	    this.channelID = channelID
-	    this.title = title;
-	    this.path = __dirname+"/lists/"+channelID+"/"+title+".json"
-	    this.entries = [];
-	    fs.mkdir(__dirname+"/lists/"+channelID,
-	              { recursive: true }, (err) => {
-		      if (err) throw err;
-	    });
-	    logger.info("initialized "+this.path);
-    }
+var Discord = require('discord.io');
+var fs = require('fs');
+var logger = require('winston');
+var auth = require('./auth.json');
 
-    //add an entry to a list
-    addEntry(message) {
-	    this.entries.push(message);
-	    this.save();
-    }
+// Configure logger settings
+logger.remove(logger.transports.Console);
+logger.add(logger.transports.Console, {
+    colorize: true
+});
+logger.level = 'debug';
 
-    //get a printable version with title and numbered entries
-    get printable(){
-	    let printable = this.title+"\n";
-            for (var entrynum = 0; entrynum < this.entries.length; entrynum++) {
-                let humnum = entrynum + 1;
-                printable = printable + humnum+". "+this.entries[entrynum]+"\n";
-            };
-	    return printable;
-    }
+// Initialize Discord Bot
+var bot = new Discord.Client({
+    token: auth.token,
+    autorun: true
+});
 
-    get json(){
-	    return JSON.stringify(this);
-    }
+// Confirm bot is ready
+bot.on('ready', function (evt) {
+    logger.info('Connected');
+    logger.info('Logged in as: ');
+    logger.info(bot.username + ' - (' + bot.id + ')');
+});
 
-    load(path) {
-	    this.entries = require(this.path);
-    }
-
-    save() {
-    	fs.writeFile(
-                this.path,
-    			JSON.stringify(this.entries),
-    			(err) => { if (err) throw err;
-    	                   logger.info('saved '+this.path); }
-            )
-    }
-}
-
-//start activelists as blank, to contain list objects
-let activeLists = {};
-
-//initialize titles from the last known list of active tables
-//this will fail bad if titles.json hasn't yet been created
-//let titles = {};
-if (fs.existsSync("./titles.json")) {
-    var titles = require("./titles.json")
-} else {
-    var titles = {};
-}
-
-logger.info("Loading lists according to titles.json:");
-logger.info(titles);
-
-//for each active title, load that list from file
-//key = channelID, titles[key] = title
-for (var key in titles) {
-	logger.info("loading "+titles[key]+" for channelID "+key);
-	let newlist = new RPGList(titles[key], key);
-	newlist.load("./lists/"+key+"/"+titles[key]);
-	activeLists[key] = newlist;
-	logger.info("success");
-}
-
-
-
-let title = '';
-let entries = [];
+// Bring the big man in and let him do his business
 var zd = new Zadelrazz(bot);
 
+// Resume state if shit crashed last time, otherwise make new lists
+var titles = zd.initializeTitles(logger);
+var activeLists = zd.loadActiveListsFromTitles(titles, logger);
+
 bot.on('message', function (user, userID, channelID, message, evt) {
-    // The philosophy is that this bot.on() function handles incoming text
-    // and passes it to Zadelrazz, who then decides what to do with the commands.
-    // The logic here should make no choices for Zadelrazz, only make his
-    // orders clear.
+    // The philosophy is that this bot.on() function handles incoming text and,
+    // if they're valid commands, passes them on to Zadelrazz. It shouldn't
+    // decide what he does with them except in the case of failure, where bot.on
+    // politely requests that he send help text.
 
     // Listen for messages that start with `!` and process the first word
     // as a command
@@ -194,24 +190,24 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         args = args.splice(1);
 
         switch(cmd) {
-	    // !new [title]
-	    case 'new':
-    		title = message.substring(5);
-    		zd.newList(channelID, title);
-    		break;
-	    case 'title':
-    		zd.sendActiveTitle(channelID);
-    		break;
-	    ///save the list and reprint it collated
-	    case 'end':
-            zd.endActiveList(channelID);
-    		break;
-        case 'help':
-            zd.sendHelpText(channelID);
-            break;
-        default:
-            bot.sendMessage({ to: channelID, message: 'Unknown command.' });
-            zd.sendHelpText();
+    	    // !new [title]
+    	    case 'new':
+        		title = message.substring(5);
+        		zd.newList(channelID, title);
+        		break;
+    	    case 'title':
+        		zd.sendActiveTitle(channelID);
+        		break;
+    	    // save the list and reprint it collated
+    	    case 'end':
+                zd.endActiveList(channelID);
+        		break;
+            case 'help':
+                zd.sendHelpText(channelID);
+                break;
+            default:
+                bot.sendMessage({ to: channelID, message: 'Unknown command.' });
+                zd.sendHelpText();
         }
     }
 
