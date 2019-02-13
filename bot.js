@@ -28,6 +28,7 @@ bot.on('ready', function (evt) {
 class Zadelrazz {
     constructor(discordClient) {
         this.bot = discordClient;
+        this.listeningForListItems = false;
         this.helpText = "Commands:"
         + "\n!new [NAME] : Start listening for entries to table NAME."
         + "\n    -> Each following message that begins with i., where i is an integer, will be added to the table."
@@ -35,7 +36,13 @@ class Zadelrazz {
         + "\n!end : Close the active table, list its contents, and save them to the server."
         + "\n!help : Display this help message.";
     }
-    newList(title, channelID) {
+    newList(channelID, title) {
+        // If this channel already has a list open, close it
+        if (titles[channelID]) {
+            this.endActiveList(channelID)
+        }
+        // Then, bombs away!
+        this.listeningForListItems = true
         titles[channelID] = title;
         activeLists[channelID] = new RPGList(title, channelID);
         fs.writeFile('titles.json',
@@ -44,11 +51,11 @@ class Zadelrazz {
         );
         this.bot.sendMessage({
             to: channelID,
-            message: 'Starting: '+titles[channelID]
+            message: 'Starting: ' + titles[channelID]
         });
     }
     sendActiveTitle(channelID) {
-        if (channelID in activeLists) {
+        if (this.listeningForListItems && channelID in activeLists) {
             this.bot.sendMessage({
                 to: channelID,
                 message: 'Current: '+titles[channelID]
@@ -56,8 +63,26 @@ class Zadelrazz {
         } else {
             this.bot.sendMessage({
                 to: channelID,
-                message: 'No known list for this channel'
+                message: 'No current list for this channel.'
             });
+        }
+    }
+    processListItem(channelID, message, evt) {
+        if (this.listeningForListItems && channelID in activeLists) {
+            let entrytext = message.substring(message.indexOf(".")+1);
+            entrytext = entrytext.trim();
+            bot.addReaction({
+                channelID: channelID,
+                messageID: evt.d.id,
+                reaction: "🤖"
+            }, (err,res) => {
+                if (err) logger.info(err)
+            });
+            logger.info('The entry is: ' + entrytext);
+            logger.info(activeLists[channelID].json);
+            activeLists[channelID].addEntry(entrytext);
+        } else {
+            logger.info('Ignoring apparently list-item-like message.');
         }
     }
     endActiveList(channelID) {
@@ -66,6 +91,8 @@ class Zadelrazz {
             message: activeLists[channelID].printable
         });
         activeLists[channelID].save();
+        delete activeLists[channelID];
+        this.listeningForListItems = false;
     }
     sendHelpText(channelID) {
         bot.sendMessage({
@@ -154,6 +181,11 @@ let entries = [];
 var zd = new Zadelrazz(bot);
 
 bot.on('message', function (user, userID, channelID, message, evt) {
+    // The philosophy is that this bot.on() function handles incoming text
+    // and passes it to Zadelrazz, who then decides what to do with the commands.
+    // The logic here should make no choices for Zadelrazz, only make his
+    // orders clear.
+
     // Listen for messages that start with `!` and process the first word
     // as a command
     if (message.substring(0, 1) == '!') {
@@ -165,7 +197,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 	    // !new [title]
 	    case 'new':
     		title = message.substring(5);
-    		zd.newList(title, channelID);
+    		zd.newList(channelID, title);
     		break;
 	    case 'title':
     		zd.sendActiveTitle(channelID);
@@ -183,27 +215,10 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         }
     }
 
-    //catch list entries that are just a number and a dot
+    // Listen for list entries that are just a number and a dot
     let dotsplits = message.split('.');
     if (dotsplits[0].length > 0 && !isNaN(dotsplits[0])) {
-    	if (channelID in activeLists) {
-    	    let entrytext = message.substring(message.indexOf(".")+1);
-    	    entrytext = entrytext.trim();
-    	    bot.addReaction({
-    	        channelID: channelID,
-    	        messageID: evt.d.id,
-    	        reaction: "🤖"
-    	    }, (err,res) => {
-    	        if (err) logger.info(err)
-    	    });
-    	    logger.info('The entry is: '+entrytext);
-    	    logger.info(activeLists[channelID].json);
-    	    activeLists[channelID].addEntry(entrytext);
-    	} else {
-    		logger.info('ignoring message until list declaration');
-    	}
-    	// bot.sendMessage({ to: channelID, message: 'Adding #'+lists[channelID].entries.length+' to '+lists[channelID].title });
-
+        zd.processListItem(channelID, message, evt);
     }
 
 })
