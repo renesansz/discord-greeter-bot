@@ -4,20 +4,28 @@
 Zadelrazz is a discord bot for making lists. Tell him when you are starting a new lists, and he will automatically save each new numbered entry. Finally, tell him when you're done and he'll spit out the whole thing.
 
 # Commands
+!new [NAME] : Start listening for entries to table NAME.
+
+-> Each following message that begins with i., where i is an integer, will be added to the table.
+
+!title : Print the active table's name.
+
+!end : Close the active table, list its contents, and save them to the server.
+
+!help : Display this help message.
+
 See !help for an up-to-date list of commands and options.
 
 # Todo
-## Critical
-* crash handling/resume lists between sessions/save mid-entry
 
 ## High priority
-* better readme
-* Behave better in between lists
-* Search saved list titles
-* roll on saved lists
 * record server of origin and entry authors
+* better folder names (maybe just a file in the folder with the name of the server/channel?)
+* flagging system for moderation
 
 ## Low priority
+* roll on saved lists
+* search saved lists
 * output compiled lists to an additional specified channel
 * host online somewhere
 * make publicly invitable
