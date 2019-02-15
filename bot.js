@@ -8,7 +8,7 @@ class RPGList {
                   { recursive: true }, (err) => {
               if (err) throw err;
         });
-        logger.info("initialized "+this.path);
+        logger.info("initialized lists/"+channelID+"/");
         // If the file exists, load it; otherwise, save a blank file
         if (fs.existsSync(this.path)) {
             this.load();
@@ -146,7 +146,7 @@ class Zadelrazz {
             logger.info(activeLists[channelID].json);
             activeLists[channelID].addEntry(entrytext);
         } else {
-            logger.info('Ignoring apparently list-item-like message.');
+            logger.info(channelID+': Ignoring apparently list-item-like message.');
         }
     }
     endActiveList(channelID) {
