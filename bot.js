@@ -3,6 +3,13 @@ var fs = require('fs');
 var logger = require('winston');
 var auth = require('./auth.json');
 
+// Configure logger settings
+logger.remove(logger.transports.Console);
+logger.add(logger.transports.Console, {
+    colorize: true
+});
+logger.level = 'debug';
+
 class RPGList {
     constructor(title, channelID) {
         this.channelID = channelID;
@@ -24,18 +31,38 @@ class RPGList {
 
     //add an entry to a list
     addEntry(user, userID, message) {
+        logger.debug("user: "+user+"userID");
         this.entries.push({text:message, author:user, authorID:userID});
         this.save();
     }
 
     //get a printable version with title and numbered entries
     get printable(){
-        let printable = this.title+"\n";
-            for (var entrynum = 0; entrynum < this.entries.length; entrynum++) {
-                let humnum = entrynum + 1;
-                printable += humnum+". "+this.entries[entrynum].text+"\n";
-            };
+        let printable = '**'+this.title+"**\n";
+        for (var entrynum = 0; entrynum < this.entries.length; entrynum++) {
+            let humnum = entrynum + 1;
+            printable += humnum+". "+this.entries[entrynum].text+"\n";
+        };
+	printable += "Authors: "+this.authors+"\n";
+	printable += "AuthorIDs: "+this.authorIDs+"\n";
         return printable;
+    }
+
+    get authors(){
+        let authors = new Set();
+	for (let entry in this.entries){
+	    logger.debug(this.entries[entry].author);
+	    authors.add(this.entries[entry].author);
+	}
+	return Array.from(authors).join(", ");
+    }
+
+    get authorIDs(){
+        let authorIDs = "";
+	for (var entry in this.entries){
+	    authorIDs += entry.authorID;
+	}
+	return authorIDs;
     }
 
     get json(){
@@ -156,6 +183,7 @@ class Zadelrazz {
             });
             logger.info(channelID+":"+activeLists[channelID].title+" adding entry:");
 	    logger.info(entrytext);
+	    logger.debug("By "+userID+":"+user);
             //Printing the whole list object every time is messy and poorly formatted
 	    logger.debug(activeLists[channelID].json);
             activeLists[channelID].addEntry(user, userID, entrytext);
@@ -181,13 +209,6 @@ class Zadelrazz {
         });
     }
 }
-
-// Configure logger settings
-logger.remove(logger.transports.Console);
-logger.add(logger.transports.Console, {
-    colorize: true
-});
-logger.level = 'info';
 
 // Initialize Discord Bot
 var bot = new Discord.Client({
