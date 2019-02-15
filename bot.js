@@ -1,3 +1,8 @@
+var Discord = require('discord.io');
+var fs = require('fs');
+var logger = require('winston');
+var auth = require('./auth.json');
+
 class RPGList {
     constructor(title, channelID) {
         this.channelID = channelID;
@@ -5,10 +10,10 @@ class RPGList {
         this.path = __dirname+"/lists/"+channelID+"/"+title+".json"
         this.entries = [];
         fs.mkdir(__dirname+"/lists/"+channelID,
-                  { recursive: true }, (err) => {
-              if (err) throw err;
+                { recursive: true }, (err) => {
+            if (err) throw err;
         });
-        logger.info("initialized lists/"+channelID+"/");
+        logger.debug("initialized lists/"+channelID+"/");
         // If the file exists, load it; otherwise, save a blank file
         if (fs.existsSync(this.path)) {
             this.load();
@@ -18,8 +23,8 @@ class RPGList {
     }
 
     //add an entry to a list
-    addEntry(message) {
-        this.entries.push(message);
+    addEntry(user, userID, message) {
+        this.entries.push({text:message, author:user, authorID:userID});
         this.save();
     }
 
@@ -28,7 +33,7 @@ class RPGList {
         let printable = this.title+"\n";
             for (var entrynum = 0; entrynum < this.entries.length; entrynum++) {
                 let humnum = entrynum + 1;
-                printable = printable + humnum+". "+this.entries[entrynum]+"\n";
+                printable += humnum+". "+this.entries[entrynum].text+"\n";
             };
         return printable;
     }
@@ -53,14 +58,18 @@ class RPGList {
                 this.path,
                 "[]",
                 (err) => { if (err) throw err;
-                           logger.info('saved '+this.path); }
+                    logger.info(
+		    this.channelID+":"+this.title+' saved with '+this.entries.length+
+		    " entries"); }
             );
         } else {
             fs.writeFile(
                 this.path,
                 JSON.stringify(this.entries),
                 (err) => { if (err) throw err;
-                           logger.info('saved '+this.path); }
+                    logger.info(
+		    this.channelID+":"+this.title+' saved with '+this.entries.length+
+		    " entries"); }
             );
         }
     }
@@ -83,7 +92,8 @@ class Zadelrazz {
         if (fs.existsSync("./titles.json")) {
             titles = require("./titles.json");
         }
-        logger.info(titles);
+        //We're about to print each channel and title, so this is redundant, I think
+	logger.debug(titles);
         return titles;
     }
     loadActiveListsFromTitles(titles, logger) {
@@ -91,11 +101,11 @@ class Zadelrazz {
         //key = channelID, titles[key] = title
         var activeLists = {};
         for (var channelID in titles) {
-            logger.info("loading "+titles[channelID]+" for channelID "+channelID);
+            logger.debug(channelID+"attempting to load "+titles[channelID]);
             this.listeningForListItems[channelID] = true
             let newlist = new RPGList(titles[channelID], channelID);
             activeLists[channelID] = newlist;
-            logger.info("success");
+            logger.debug("Lists loaded successfuly");
         }
         return activeLists;
     }
@@ -133,7 +143,7 @@ class Zadelrazz {
             });
         }
     }
-    processListItem(channelID, message, evt) {
+    processListItem(user, userID, channelID, message, evt) {
         if (this.listeningForListItems[channelID] && channelID in activeLists) {
             let entrytext = message.substring(message.indexOf(".")+1);
             entrytext = entrytext.trim();
@@ -144,9 +154,11 @@ class Zadelrazz {
             }, (err,res) => {
                 if (err) logger.info(err)
             });
-            logger.info('The entry is: ' + entrytext);
-            logger.info(activeLists[channelID].json);
-            activeLists[channelID].addEntry(entrytext);
+            logger.info(channelID+":"+activeLists[channelID].title+" adding entry:");
+	    logger.info(entrytext);
+            //Printing the whole list object every time is messy and poorly formatted
+	    logger.debug(activeLists[channelID].json);
+            activeLists[channelID].addEntry(user, userID, entrytext);
         } else {
             logger.info(channelID+': Ignoring apparently list-item-like message.');
         }
@@ -170,17 +182,12 @@ class Zadelrazz {
     }
 }
 
-var Discord = require('discord.io');
-var fs = require('fs');
-var logger = require('winston');
-var auth = require('./auth.json');
-
 // Configure logger settings
 logger.remove(logger.transports.Console);
 logger.add(logger.transports.Console, {
     colorize: true
 });
-logger.level = 'debug';
+logger.level = 'info';
 
 // Initialize Discord Bot
 var bot = new Discord.Client({
@@ -240,7 +247,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
     // Listen for list entries that are just a number and a dot
     let dotsplits = message.split('.');
     if (dotsplits[0].length > 0 && !isNaN(dotsplits[0])) {
-        zd.processListItem(channelID, message, evt);
+        zd.processListItem(user, userID, channelID, message, evt);
     }
 
 })
