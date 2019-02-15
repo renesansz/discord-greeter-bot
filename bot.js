@@ -24,7 +24,7 @@ class RPGList {
 
     //add an entry to a list
     addEntry(user, userID, message) {
-        this.entries.push(message);
+        this.entries.push({text:message, author:user, authorID:userID});
         this.save();
     }
 
@@ -33,7 +33,7 @@ class RPGList {
         let printable = this.title+"\n";
             for (var entrynum = 0; entrynum < this.entries.length; entrynum++) {
                 let humnum = entrynum + 1;
-                printable = printable + humnum+". "+this.entries[entrynum]+"\n";
+                printable += humnum+". "+this.entries[entrynum].text+"\n";
             };
         return printable;
     }
