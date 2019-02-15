@@ -41,7 +41,9 @@ class RPGList {
         // Make sure this.path isn't an empty file so loading JSON
         // doesn't break everything
         if (fs.statSync(this.path)["size"] != 0) {
-               this.entries = require(this.path);
+            this.entries = require(this.path);
+	    logger.info(
+                this.channelID+":"+this.title+" "+this.entries.length+" items loaded");
         }
     }
 
