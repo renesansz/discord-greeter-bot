@@ -1,13 +1,15 @@
 {
-  "name": "greeter-bot",
+  "name": "discord-greeter-bot",
   "version": "1.0.0",
-  "description": "Greeter bot for Renesansz-Playground",
-  "main": "bot.js",
-  "repository": "git@github.com:renesansz/discord-greeter-bot.git",
-  "author": "Renemari Padillo",
-  "license": "MIT",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "discord.io": "github:woor/discord.io#gateway_v6",
-    "winston": "^2.3.1"
+    "discord.js": "^11.4.2"
   }
 }
