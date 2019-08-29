@@ -2,7 +2,7 @@
 
 This is a simple code example on how to start your own Discord bot.
 
-If you just have stumbled the Git repo directly and no idea how this is being setup, please read my full guide [here](https://medium.com/davao-js/2019-tutorial-creating-your-first-simple-discord-bot-47fc836a170b).
+If you just have stumbled to the Git repo directly and no idea how this is being setup, please read my full guide [here](https://medium.com/davao-js/2019-tutorial-creating-your-first-simple-discord-bot-47fc836a170b).
 
 ## Prerequisites
 
