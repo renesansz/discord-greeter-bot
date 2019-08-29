@@ -1,14 +1,11 @@
 {
   "name": "discord-greeter-bot",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "Simple discord bot script for responding to ping message from user.",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Rene Padillo",
+  "license": "MIT",
   "dependencies": {
     "discord.js": "^11.4.2"
   }
