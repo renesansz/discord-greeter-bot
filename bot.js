@@ -1,8 +1,9 @@
+// Run dotenv
+require('dotenv').config()
+
 // Import libraries
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const auth = require('./auth.json');
-
 
 // Event listener when a user connected to the server.
 client.on('ready', () => {
@@ -20,4 +21,4 @@ client.on('message', msg => {
 });
 
 // Initialize bot by connecting to the server
-client.login(auth.token);
+client.login(process.env.DISCORD_TOKEN);
