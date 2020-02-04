@@ -17,7 +17,7 @@ If you just have stumbled to the Git repo directly and no idea how this is being
 - Open your terminal and navigate to the root folder of the project
 - Install pre-requisites by doing `npm i` or `npm install` in the terminal
 - Generate your access token via [Discord App Developers portal](https://discordapp.com/developers/applications/).
-- In the project folder, duplicate the `auth.json.tpl` and rename it to `auth.json` then open it and add the generated token (from previous step) value there
+- In the project folder, duplicate the `.env.tpl` and rename it to `.env` then open it and add the generated token (from previous step) value there
 
 ## Starting the bot
 

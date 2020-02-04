@@ -1,5 +1,5 @@
 // Run dotenv
-require('dotenv').config()
+require('dotenv').config();
 
 // Import libraries
 const Discord = require('discord.js');
