@@ -5,6 +5,7 @@
   "main": "bot.js",
   "keywords": [],
   "author": "Rene Padillo",
+  "repository": "https://github.com/renesansz/discord-greeter-bot",
   "license": "MIT",
   "scripts": {
     "start": "node bot.js"
@@ -14,6 +15,6 @@
     "dotenv": "^8.1.0"
   },
   "engines": {
-    "node": "8.11.2"
+    "node": "12.x"
   }
 }
