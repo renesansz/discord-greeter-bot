@@ -11,7 +11,7 @@
     "start": "node bot.js"
   },
   "dependencies": {
-    "discord.js": "^11.4.2",
+    "discord.js": "^12.2.0",
     "dotenv": "^8.1.0"
   },
   "engines": {
