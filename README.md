@@ -1,7 +1,7 @@
 # Bibot (From _The Scarlet Pimpernel_)
 Welcome to this unique discord bot! It is inspired from the novel, *The Scarlet Pimpernel*. In the novel, there is a character named Sergeant Bibot. He utters, "Morbleu!", [which expresses surprise and/or annoyance in French](https://www.lexico.com/en/definition/morbleu).
 
-This is a simple bot that returns "Morbleu!" when someone in the chat says, "Bibot".
+This is a simple bot. The primary feature is returning "Morbleu!" when someone in the chat says, "Bibot". However, there are other keywords, and more may be added in the future!
 
 # Example 
 <img src="https://raw.githubusercontent.com/ssharker21/Bibot/master/screenshot.png" height="500" width="500">
