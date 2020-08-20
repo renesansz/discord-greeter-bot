@@ -4,7 +4,7 @@ Welcome to this unique discord bot! It is inspired from the novel, *The Scarlet 
 This is a simple bot. The primary feature is returning "Morbleu!" when someone in the chat says, "Bibot". However, there are other keywords, and more may be added in the future!
 
 # Example 
-<img src="https://raw.githubusercontent.com/ssharker21/Bibot/master/screenshot.png" height="500" width="500">
+<img src="https://raw.githubusercontent.com/ssharker21/Bibot/master/screenshot.png" height="650" width="650">
 
 # Prerequisites
 
