@@ -31,6 +31,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             case 'Bibot':
                 bot.sendMessage({ to: channelID, message: 'Morbleu!' });
             break;
+            case 'Haters':
+                bot.sendMessage({ to: channelID, message: 'How that stupid, dull Englishman ever came to be admitted within the intellectual circle which revolved round “the cleverest woman in Europe,” as her friends unanimously called her, no one ventured to guess—a golden key is said to open every door, asserted the more malignantly inclined.' });
+            break;
 	    case 'UselessJunk':
                 bot.sendMessage({ to: channelID, message: 'How dare you call me useless junk! I will hunt you down and blah blah blah blah blah blah blah blah!' });
             break;
