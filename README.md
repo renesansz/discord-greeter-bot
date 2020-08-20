@@ -5,6 +5,8 @@ Welcome to this unique discord bot! It is inspired from the novel, *The Scarlet 
 
 This is a simple bot that returns "Morbleu!" when someone in the chat says, "Bibot".
 
+# Example 
+[Example of Bot](https://raw.githubusercontent.com/ssharker21/Bibot/master/screenshot.png)
 # Prerequisites
 
 * You need to have [NodeJS](https://nodejs.org/en/download/) installed. To install NodeJS, go [here](http://lmgtfy.com/?q=how+to+install+nodejs).
