@@ -8,7 +8,7 @@ This is a simple bot that returns "Morbleu!" when someone in the chat says, "Bib
 
 # Prerequisites
 
-* You need to have [NodeJS](https://nodejs.org/en/download/) installed. To install NodeJS, go [here](http://lmgtfy.com/?q=how+to+install+nodejs).
+* You must have [NodeJS](https://nodejs.org/en/download/) installed. To install NodeJS, go [here](http://lmgtfy.com/?q=how+to+install+nodejs).
 
 # Setup
 
