@@ -27,7 +27,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         args = args.splice(1);
 
         switch(cmd) {
-            // when someone sends Bibot
+            // When someone says a keyword, the bot is triggerred
             case 'Bibot':
                 bot.sendMessage({ to: channelID, message: 'Morbleu!' });
             break;
