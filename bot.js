@@ -31,6 +31,12 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             case 'Bibot':
                 bot.sendMessage({ to: channelID, message: 'Morbleu!' });
             break;
+            case 'IntenseLove':
+                bot.sendMessage({ to: channelID, message: 'He seemed so devoted—a very slave—and there was a certain latent intensity in that love which had fascinated her.' });
+            break;
+            case 'Contempt':
+                bot.sendMessage({ to: channelID, message: 'Thus human beings judge of one another, superficially, casually, throwing contempt on one another, with but little reason, and no charity.' });
+            break;
             case 'PercySmart':
                 bot.sendMessage({ to: channelID, message: 'He was calmly eating his soup, laughing with pleasant good-humour, as if he had come all the way to Calais for the express purpose of enjoying supper at this filthy inn, in the company of his arch-enemy.' });
             break;
