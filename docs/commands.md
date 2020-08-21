@@ -1,5 +1,5 @@
 # Bibot Commands
-The prefix is ?
+The prefix is `?`
 - Bibot = Morbleu!
 - IntenseLove = Love Quote about Sir Percy
 - Contempt = A description about humans hating each other
